@@ -7,8 +7,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     let allIframeHTML = getAllIframeHTML(getAllIframe)
     let iframeFunURL = getIframeFunUrl(allIframeHTML, totalFun)
     // console.log()
-
-    sendResponse({ status: "Color changed to " + request.color });
+    sendResponse({ iframe: getIframeSrc(getAllIframe) });
   }
 });
 
@@ -25,10 +24,10 @@ function getIframeDom(iframe) {
 
   for (var i = 0; i < scripts.length; i++) {
     var scriptContent = scripts[i].textContent || scripts[i].innerText; // 兼容性处理  
-    console.log('Script ' + (i + 1) + ':');
-    console.log(scriptContent);
-    console.dir(scripts[i])
-    console.log('------------------------');
+    // console.log('Script ' + (i + 1) + ':');
+    // console.log(scriptContent);
+    // console.dir(scripts[i])
+    // console.log('------------------------');
   }
   return DOM
 }
@@ -81,4 +80,13 @@ function getIframeFunUrl(iframeArr, funArr) {
       }
     })
   }
+}
+
+function getIframeSrc(iframe) {
+  iframe = [...iframe]
+  iframe = iframe.map(item => {
+    return item.src
+  })
+
+  return iframe
 }
