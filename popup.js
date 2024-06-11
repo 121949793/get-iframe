@@ -49,4 +49,7 @@ function mountFun(dom) {
     event.preventDefault()
     copyText(event)
   })
+  event.preventDefault()
+  copyText(event)
+})
 }
