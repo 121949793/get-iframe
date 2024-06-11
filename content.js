@@ -3,10 +3,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     document.body.style.backgroundColor = request.color;
 
     let getAllIframe = getArrIfm()
-    let totalFun = getIfmFuns(getAllIframe)
-    let allIframeHTML = getAllIframeHTML(getAllIframe)
-    let iframeFunURL = getIframeFunUrl(allIframeHTML, totalFun)
-    // console.log()
+    // let totalFun = getIfmFuns(getAllIframe)
+    // let allIframeHTML = getAllIframeHTML(getAllIframe)
+    // let iframeFunURL = getIframeFunUrl(allIframeHTML, totalFun)
+    console.log(getAllIframe)
     sendResponse({ iframe: getIframeSrc(getAllIframe) });
   }
 });
