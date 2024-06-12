@@ -3,11 +3,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     document.body.style.backgroundColor = request.color;
 
     let getAllIframe = getArrIfm()
-    // let totalFun = getIfmFuns(getAllIframe)
-    // let allIframeHTML = getAllIframeHTML(getAllIframe)
-    // let iframeFunURL = getIframeFunUrl(allIframeHTML, totalFun)
-    console.log(getAllIframe)
     sendResponse({ iframe: getIframeSrc(getAllIframe) });
+
+    let totalFun = getIfmFuns(getAllIframe)
+    let allIframeHTML = getAllIframeHTML(getAllIframe)
+    let iframeFunURL = getIframeFunUrl(allIframeHTML, totalFun)
+    console.log(iframeFunURL)
   }
 });
 
@@ -35,9 +36,27 @@ function getIframeDom(iframe) {
 function getIframeDomHTML(iframe) {
   let iframeDocument = iframe.contentWindow.document;
   let DOM = iframeDocument.documentElement.outerHTML;
+  // console.log(extractFunctionBody('btnAdd', DOM))
   return DOM
 }
+const extractFunctionBody = (functionName, scriptText) => {
+  const functionStart = scriptText.indexOf(`function ${functionName}`);
+  if (functionStart === -1) return null;
 
+  let openBraces = 0;
+  let functionBody = '';
+  let i = functionStart;
+
+  while (i < scriptText.length) {
+    const char = scriptText[i];
+    functionBody += char;
+    if (char === '{') openBraces++;
+    if (char === '}') openBraces--;
+    if (openBraces === 0 && functionBody.includes('{')) break;
+    i++;
+  }
+  return functionBody;
+};
 function getAllIframeHTML(allIfm) {
   let totalFun = []
   allIfm.forEach(item => {
@@ -61,25 +80,26 @@ function getIfmFuns(allIfm) {
 function getIframeFunUrl(iframeArr, funArr) {
   if (iframeArr.length == 0 || funArr.length == 0) return
   if (iframeArr.length != funArr.length) return
-
+  let obj = new Object()
   for (const key in iframeArr) {
+    obj[key] = new Object()
     funArr[key].forEach(item => {
-      let funName = item.split('()')[0]
-      let dok = iframeArr[key].replace(/\s/g, '')
-      // const regex = /function btnAdd\(\) \{([\s\S]*?)\}/;
-      // let str = '/function btnAdd\(\) \{([\s\S]*?)\}/'
-      // const functionName = 'btnAdd';
-      let aaa = new RegExp(`function ${funName}\\(\\)\\s*\\{\\s*([\\s\\S]*?)\\s*\\}`);
-      const regex = /function btnAdd\(\) \{([\s\S]*?)\}/;
-      let target = iframeArr[key].match(aaa)
-      if (target) {
-        const functionBody = target[1];
-
-      } else {
-        console.log("未匹配到 btnAdd 函数体");
-      }
+      let fun = extractFunctionBody(item, iframeArr[key])
+      let str = findURL(fun)
+      console.log(item, str, key)
+      obj[key][item] = str
     })
   }
+  return obj
+}
+
+function findURL(str) {
+  // 正则表达式匹配 HTML 文件路径
+  const htmlPathRegex = /'([^']*\.html)[^']*'/g;
+  // 替换 HTML 文件路径
+  const url = htmlPathRegex.exec(str)?.[1]
+
+  return url
 }
 
 function getIframeSrc(iframe) {

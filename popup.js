@@ -1,11 +1,19 @@
+document.addEventListener('DOMContentLoaded', function () {
+  sendMsg()
+});
 let getIfmBtn = document.querySelector(".getIfm")
 getIfmBtn.addEventListener('click', () => {
+  sendMsg()
+});
+
+function sendMsg() {
   chrome.runtime.sendMessage({ action: "fetchData" }, (response) => {
     console.log("bg收到响应回传的response：", response)
     appendHtml(response.iframe)
-
   });
-});
+}
+
+
 function copyText(element) {
   // 获取 <a> 标签中的文本
   var copyText = element.target.textContent;
@@ -49,7 +57,4 @@ function mountFun(dom) {
     event.preventDefault()
     copyText(event)
   })
-  event.preventDefault()
-  copyText(event)
-})
 }

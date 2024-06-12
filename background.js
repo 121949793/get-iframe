@@ -1,9 +1,6 @@
 
-console.log(chrome.runtime)
-document.addEventListener('DOMContentLoaded', function () {
-  console.log('Popup opened');
-  // 其他初始化操作
-});
+console.log(12312)
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "fetchData") {
     console.log("Message received from popup.js:", request);
