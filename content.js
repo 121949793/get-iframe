@@ -1,14 +1,16 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "highlightText") {
-    document.body.style.backgroundColor = request.color;
+    // document.body.style.backgroundColor = request.color;
 
     let getAllIframe = getArrIfm()
-    sendResponse({ iframe: getIframeSrc(getAllIframe) });
+    let tempArr = getIframeSrc(getAllIframe)
+    sendResponse({ iframe: splitUrl(tempArr) });
 
     let totalFun = getIfmFuns(getAllIframe)
     let allIframeHTML = getAllIframeHTML(getAllIframe)
     let iframeFunURL = getIframeFunUrl(allIframeHTML, totalFun)
-    console.log(iframeFunURL)
+    let allIfCompleteUrl = concatUrl(tempArr, iframeFunURL)
+    console.log(allIfCompleteUrl)
   }
 });
 
@@ -32,7 +34,8 @@ function getIframeDom(iframe) {
   }
   return DOM
 }
-
+function getIframeId(iframe) {
+}
 function getIframeDomHTML(iframe) {
   let iframeDocument = iframe.contentWindow.document;
   let DOM = iframeDocument.documentElement.outerHTML;
@@ -58,10 +61,10 @@ const extractFunctionBody = (functionName, scriptText) => {
   return functionBody;
 };
 function getAllIframeHTML(allIfm) {
-  let totalFun = []
+  let totalFun = new Object()
   allIfm.forEach(item => {
     let ifDom = getIframeDomHTML(item)
-    totalFun.push(ifDom)
+    totalFun[item.id] = ifDom
   })
   return totalFun
 }
@@ -70,6 +73,7 @@ function getIfmFuns(allIfm) {
   allIfm.forEach(item => {
     let ifDom = getIframeDom(item)
     let bars = ifDom.querySelector('#toolsOther')?.querySelectorAll('a')
+    bars = bars ? bars : []
     bars = [...bars]
     funArr = bars.map(node => node.attributes['onclick'].nodeValue)
     totalFun.push(funArr)
@@ -78,17 +82,19 @@ function getIfmFuns(allIfm) {
 }
 
 function getIframeFunUrl(iframeArr, funArr) {
-  if (iframeArr.length == 0 || funArr.length == 0) return
-  if (iframeArr.length != funArr.length) return
+  // if (iframeArr.length == 0 || funArr.length == 0) return
+  // if (iframeArr.length != funArr.length) return
   let obj = new Object()
+  let nums = 0
   for (const key in iframeArr) {
+    console.log(key)
     obj[key] = new Object()
-    funArr[key].forEach(item => {
+    funArr[nums].forEach(item => {
       let fun = extractFunctionBody(item, iframeArr[key])
       let str = findURL(fun)
-      console.log(item, str, key)
       obj[key][item] = str
     })
+    nums++
   }
   return obj
 }
@@ -109,4 +115,33 @@ function getIframeSrc(iframe) {
   })
 
   return iframe
+}
+
+function splitUrl(arr) {
+  return arr.map(item => {
+    if (item) {
+      return item.split('http://localhost:52072')[1]
+    } else {
+      return ''
+    }
+  })
+}
+
+function concatUrl(ifArr, funArr) {
+  let index = 0
+  for (const key in funArr) {
+    let item = funArr[key]
+    let ifurl = ifArr[index]
+    for (const val in item) {
+      let src = item[val]
+      if (src) {
+        let Infix = src?.match(/\.\.\/([^/]+)/)?.[1]
+        let suffix = src.split(Infix + '/')[1]
+        let prefix = ifurl.split(Infix)[0]
+        item[val] = prefix + Infix + suffix
+      }
+    }
+    index++
+  }
+  return funArr
 }

@@ -1,10 +1,10 @@
 document.addEventListener('DOMContentLoaded', function () {
   sendMsg()
 });
-let getIfmBtn = document.querySelector(".getIfm")
-getIfmBtn.addEventListener('click', () => {
-  sendMsg()
-});
+// let getIfmBtn = document.querySelector(".getIfm")
+// getIfmBtn.addEventListener('click', () => {
+//   sendMsg()
+// });
 
 function sendMsg() {
   chrome.runtime.sendMessage({ action: "fetchData" }, (response) => {
@@ -30,7 +30,7 @@ function copyText(element) {
   document.body.removeChild(tempInput);
 
   // 可选：显示复制成功的提示
-  alert("文本已复制: " + copyText);
+  // alert("文本已复制: " + copyText);
 }
 
 function splitUrl(url) {
