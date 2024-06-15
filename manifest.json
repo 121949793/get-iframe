@@ -16,7 +16,10 @@
   },
   "permissions": [
     "activeTab",
-    "scripting"
+    "scripting",
+    "contextMenus",
+    "notifications",
+    "activeTab"
 ],
   "content_scripts": [
     {
