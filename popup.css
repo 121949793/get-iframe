@@ -9,3 +9,18 @@ body {
   right: 10px;
   top: 10px;
 }
+
+.btn-flat {
+  background-color: #70c0e8;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-flat:hover {
+  background-color: #70c0e8;
+}
