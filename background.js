@@ -34,6 +34,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
   }
   console.log(request)
+  return true
 });
 
 function getRandomHexColor() {

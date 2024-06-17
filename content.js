@@ -5,6 +5,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     let getAllIframe = getArrIfm()
     let tempArr = getIframeSrc(getAllIframe)
     sendResponse({ iframe: splitUrl(tempArr) });
+    console.log(splitUrl(tempArr))
 
     let totalFun = getIfmFuns(getAllIframe)
     let allIframeHTML = getAllIframeHTML(getAllIframe)
@@ -87,14 +88,17 @@ function getIframeFunUrl(iframeArr, funArr) {
   let obj = new Object()
   let nums = 0
   for (const key in iframeArr) {
-    console.log(key)
     obj[key] = new Object()
     funArr[nums].forEach(item => {
       let fun = extractFunctionBody(item, iframeArr[key])
+      let name = getFunName(item, iframeArr[key])
       let str = findURL(fun)
-      obj[key][item] = str
+      obj[key][item] = new Object()
+      obj[key][item].path = str
+      obj[key][item].name = name
     })
     nums++
+
   }
   return obj
 }
@@ -133,15 +137,28 @@ function concatUrl(ifArr, funArr) {
     let item = funArr[key]
     let ifurl = ifArr[index]
     for (const val in item) {
-      let src = item[val]
+      let src = item[val].path
       if (src) {
         let Infix = src?.match(/\.\.\/([^/]+)/)?.[1]
         let suffix = src.split(Infix + '/')[1]
         let prefix = ifurl.split(Infix)[0]
-        item[val] = prefix + Infix + suffix
+        item[val].path = prefix + Infix + suffix
       }
     }
     index++
   }
   return funArr
+}
+
+
+function getFunName(funName, htmlString) {
+  var parser = new DOMParser();
+  var document = parser.parseFromString(htmlString, 'text/html');
+  let funDom = document.querySelectorAll(`[onclick='${funName}']`)
+  console.log(funDom)
+  if (funDom.length != 1) {
+    console.log('再次处理')
+    return
+  }
+  return funDom[0]?.title
 }

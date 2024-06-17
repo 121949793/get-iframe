@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
   sendMsg()
 });
-// let getIfmBtn = document.querySelector(".getIfm")
+let getIfmBtn = document.querySelector(".getIfm")
 // getIfmBtn.addEventListener('click', () => {
 //   sendMsg()
 // });
@@ -39,6 +39,7 @@ function splitUrl(url) {
 }
 
 function appendHtml(totalIF) {
+  console.log(totalIF)
   let color = document.querySelector('.color')
   let str = ''
   totalIF.forEach((item, index) => {
