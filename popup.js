@@ -9,7 +9,11 @@ let getIfmBtn = document.querySelector(".getIfm")
 function sendMsg() {
   chrome.runtime.sendMessage({ action: "fetchData" }, (response) => {
     console.log("bg收到响应回传的response：", response)
-    appendHtml(response.iframe)
+    let obj = response.iframe
+    // appendHtml(response.iframe)
+    const firstKey = Object.keys(obj)[0];
+    const firstValue = obj[firstKey];
+    appendHtml(firstValue)
   });
 }
 
@@ -39,23 +43,24 @@ function splitUrl(url) {
 }
 
 function appendHtml(totalIF) {
-  console.log(totalIF)
   let color = document.querySelector('.color')
   let str = ''
-  totalIF.forEach((item, index) => {
-    let domName = `iframeHanlder${index}`
-    str += `<a id="${domName}">${splitUrl(item)}</a><br>`
-  });
+  for (const key in totalIF) {
+    let domName = `iframeHanlder${key}`
+    let item = totalIF[key]
+    str += `<button id="${domName}" data-src="${item.path}"  class="btn-flat">${item.name}</button>`
+  }
   color.innerHTML = str
-  totalIF.forEach((item, index) => {
-    let domName = `iframeHanlder${index}`
+  for (const key in totalIF) {
+    let domName = `iframeHanlder${key}`
     mountFun(`#${domName}`)
-  });
+  }
 }
 
 function mountFun(dom) {
+  console.log(dom)
   document.querySelector(dom).addEventListener('click', (event) => {
     event.preventDefault()
-    copyText(event)
+    copyText(event.target.dataset.src)
   })
 }

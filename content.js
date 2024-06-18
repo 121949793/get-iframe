@@ -4,13 +4,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     let getAllIframe = getArrIfm()
     let tempArr = getIframeSrc(getAllIframe)
-    sendResponse({ iframe: splitUrl(tempArr) });
-    console.log(splitUrl(tempArr))
+    // sendResponse({ iframe: splitUrl(tempArr) });
 
     let totalFun = getIfmFuns(getAllIframe)
     let allIframeHTML = getAllIframeHTML(getAllIframe)
     let iframeFunURL = getIframeFunUrl(allIframeHTML, totalFun)
+    console.log(iframeFunURL, 123)
     let allIfCompleteUrl = concatUrl(tempArr, iframeFunURL)
+    sendResponse({ iframe: allIfCompleteUrl });
     console.log(allIfCompleteUrl)
   }
 });
@@ -88,14 +89,17 @@ function getIframeFunUrl(iframeArr, funArr) {
   let obj = new Object()
   let nums = 0
   for (const key in iframeArr) {
-    obj[key] = new Object()
+    let key1 = key.split('()')[0]
+    console.log(key)
+    obj[key1] = new Object()
     funArr[nums].forEach(item => {
       let fun = extractFunctionBody(item, iframeArr[key])
       let name = getFunName(item, iframeArr[key])
       let str = findURL(fun)
-      obj[key][item] = new Object()
-      obj[key][item].path = str
-      obj[key][item].name = name
+      let keyName = item.split('()')[0]
+      obj[key1][keyName] = new Object()
+      obj[key1][keyName].path = str
+      obj[key1][keyName].name = name
     })
     nums++
 
