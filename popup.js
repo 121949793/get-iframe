@@ -1,18 +1,29 @@
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log(request, 123123)
+  if (request.action == 'currentIframe') {
+    sendMsg(request.info)
+  }
+})
+
 document.addEventListener('DOMContentLoaded', function () {
   sendMsg()
+
 });
 let getIfmBtn = document.querySelector(".getIfm")
 // getIfmBtn.addEventListener('click', () => {
 //   sendMsg()
 // });
+console.log(document)
 
-function sendMsg() {
+
+function sendMsg(id) {
   chrome.runtime.sendMessage({ action: "fetchData" }, (response) => {
-    console.log("bg收到响应回传的response：", response)
+    // console.log("bg收到响应回传的response：", response)
     let obj = response.iframe
     // appendHtml(response.iframe)
     const firstKey = Object.keys(obj)[0];
-    const firstValue = obj[firstKey];
+    let target = id ? id : firstKey
+    const firstValue = obj[target];
     appendHtml(firstValue)
   });
 }
@@ -47,6 +58,7 @@ function splitUrl(url) {
 }
 
 function appendHtml(totalIF) {
+  console.log(totalIF)
   let color = document.querySelector('.color')
   let str = ''
   for (const key in totalIF) {
@@ -57,13 +69,12 @@ function appendHtml(totalIF) {
   color.innerHTML = str
   for (const key in totalIF) {
     let domName = `iframeHanlder${key}`
-    console.log(domName)
     mountFun(`#${domName}`)
   }
 }
 
 function mountFun(dom) {
-  console.log(dom)
+
   document.querySelector(dom).addEventListener('click', (event) => {
     event.preventDefault()
     copyText(event.target.dataset.src)

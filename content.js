@@ -164,3 +164,42 @@ function getFunName(funName, htmlString) {
   }
   return funDom[0]?.title
 }
+getHtmlChange()
+function getHtmlChange() {
+
+  const targetNode = document.getElementById('ContentPannel');
+
+  // 配置选项
+  const config = {
+    childList: true, // 监听子节点的变动
+    subtree: true,   // 监听子树下所有节点
+    attributes: true, // 监听属性的变动
+    characterData: false // 监听节点内容或文本的变动
+  };
+
+  // 回调函数，当监控的元素发生变化时执行
+  const callback = function (mutationsList, observer) {
+    let showIframeId = getShowIframe().id
+    chrome.runtime.sendMessage({ action: 'currentIframe', info: showIframeId })
+
+  };
+
+  // 创建一个观察者实例并传入回调函数
+  const observer = new MutationObserver(callback);
+
+  // 监听目标节点
+  observer.observe(targetNode, config);
+}
+
+function getShowIframe() {
+  const container = document.getElementById('ContentPannel');
+  const iframes = container.getElementsByTagName('iframe');
+  let blockIframes;
+  for (let iframe of iframes) {
+    const displayStyle = window.getComputedStyle(iframe).display;
+    if (displayStyle !== 'none') {
+      blockIframes = iframe
+    }
+  }
+  return blockIframes
+}
