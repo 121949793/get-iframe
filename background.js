@@ -1,26 +1,21 @@
-// 创建上下文菜单项
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.contextMenus.create({
-    id: "sampleContextMenu",
-    title: "点击我！",
-    contexts: ["all"]
-  });
-});
+// // 创建上下文菜单项
+// chrome.runtime.onInstalled.addListener(() => {
+//   chrome.contextMenus.create({
+//     id: "sampleContextMenu",
+//     title: "点击我！",
+//     contexts: ["all"]
+//   });
+// });
 
-// 监听上下文菜单项点击事件
-chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId === "sampleContextMenu") {
-    console.log(chrome.notifications)
-    chrome.notifications.create({
-      type: "basic",
-      iconUrl: './images/icon.png',
-      title: "通知",
-      message: "你点击了上下文菜单项！"
-    });
-  }
-});
+// // 监听上下文菜单项点击事件
+// chrome.contextMenus.onClicked.addListener((info, tab) => {
+//   if (info.menuItemId === "sampleContextMenu") {
+
+//   }
+// });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log(request)
   if (request.action === "fetchData") {
     console.log("Message received from popup.js:", request);
     // 处理逻辑并响应popup
@@ -33,7 +28,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       });
     });
   }
-  console.log(request)
+
+  if (request.action == 'copyDone') {
+    chrome.notifications.getAll(function (test) {
+      Object.keys(test).forEach(item => {
+        chrome.notifications.clear(item)
+      })
+    });
+    chrome.notifications.create({
+      type: "basic",
+      iconUrl: './images/icon.png',
+      title: request.info ? "复制成功！" : '复制失败！',
+      message: request.info ? request.info : '该方法暂无链接'
+    });
+  }
+
   return true
 });
 

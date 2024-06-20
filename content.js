@@ -9,10 +9,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     let totalFun = getIfmFuns(getAllIframe)
     let allIframeHTML = getAllIframeHTML(getAllIframe)
     let iframeFunURL = getIframeFunUrl(allIframeHTML, totalFun)
-    console.log(iframeFunURL, 123)
     let allIfCompleteUrl = concatUrl(tempArr, iframeFunURL)
     sendResponse({ iframe: allIfCompleteUrl });
-    console.log(allIfCompleteUrl)
   }
 });
 

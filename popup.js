@@ -19,9 +19,11 @@ function sendMsg() {
 
 
 function copyText(element) {
+  if (element == 'undefined') {
+    element = ''
+  }
   // 获取 <a> 标签中的文本
-  var copyText = element.target.textContent;
-  console.dir(element)
+  var copyText = element;
   // 创建一个临时的输入框元素
   var tempInput = document.createElement("input");
   tempInput.style.position = "absolute";
@@ -33,6 +35,8 @@ function copyText(element) {
   document.execCommand("copy");
   document.body.removeChild(tempInput);
 
+
+  chrome.runtime.sendMessage({ action: 'copyDone', info: element })
   // 可选：显示复制成功的提示
   // alert("文本已复制: " + copyText);
 }
@@ -53,6 +57,7 @@ function appendHtml(totalIF) {
   color.innerHTML = str
   for (const key in totalIF) {
     let domName = `iframeHanlder${key}`
+    console.log(domName)
     mountFun(`#${domName}`)
   }
 }
