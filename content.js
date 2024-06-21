@@ -5,11 +5,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     let getAllIframe = getArrIfm()
     let tempArr = getIframeSrc(getAllIframe)
     // sendResponse({ iframe: splitUrl(tempArr) });
-
+    let totalIndex = findIframeIndex(getAllIframe)
+    console.log(totalIndex)
     let totalFun = getIfmFuns(getAllIframe)
     let allIframeHTML = getAllIframeHTML(getAllIframe)
-    let iframeFunURL = getIframeFunUrl(allIframeHTML, totalFun)
+    console.log(totalIndex)
+
+    let iframeFunURL = getIframeFunUrl(allIframeHTML, totalFun, totalIndex)
     let allIfCompleteUrl = concatUrl(tempArr, iframeFunURL)
+    console.log(allIfCompleteUrl)
     sendResponse({ iframe: allIfCompleteUrl });
   }
 });
@@ -81,15 +85,19 @@ function getIfmFuns(allIfm) {
   return totalFun
 }
 
-function getIframeFunUrl(iframeArr, funArr) {
+function getIframeFunUrl(iframeArr, funArr, indexArr) {
   // if (iframeArr.length == 0 || funArr.length == 0) return
   // if (iframeArr.length != funArr.length) return
   let obj = new Object()
   let nums = 0
   for (const key in iframeArr) {
     let key1 = key.split('()')[0]
-    console.log(key)
     obj[key1] = new Object()
+    obj[key1]['index'] = {
+      name: 'index',
+      path: indexArr[nums]
+    }
+    console.log(indexArr[nums], 12312)
     funArr[nums].forEach(item => {
       let fun = extractFunctionBody(item, iframeArr[key])
       let name = getFunName(item, iframeArr[key])
@@ -102,10 +110,12 @@ function getIframeFunUrl(iframeArr, funArr) {
     nums++
 
   }
+  console.log(JSON.parse(JSON.stringify(obj)))
   return obj
 }
 
 function findURL(str) {
+  // console.log(str)
   // 正则表达式匹配 HTML 文件路径
   const htmlPathRegex = /'([^']*\.html)[^']*'/g;
   // 替换 HTML 文件路径
@@ -123,15 +133,7 @@ function getIframeSrc(iframe) {
   return iframe
 }
 
-function splitUrl(arr) {
-  return arr.map(item => {
-    if (item) {
-      return item.split('http://localhost:52072')[1]
-    } else {
-      return ''
-    }
-  })
-}
+
 
 function concatUrl(ifArr, funArr) {
   let index = 0
@@ -203,3 +205,7 @@ function getShowIframe() {
   }
   return blockIframes
 }
+function findIframeIndex(arr) {
+  return [...arr].map(item => '...' + item.src.split('?')[0].split('menu')[1])
+}
+

@@ -1,4 +1,4 @@
-// // 创建上下文菜单项
+// 创建上下文菜单项
 // chrome.runtime.onInstalled.addListener(() => {
 //   chrome.contextMenus.create({
 //     id: "sampleContextMenu",
@@ -53,4 +53,6 @@ function getRandomHexColor() {
     color += letters[Math.floor(Math.random() * 16)];
   }
   return color;
-}  
+}
+
+

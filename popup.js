@@ -1,5 +1,5 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log(request, 123123)
+  // console.log(request, 123123)
   if (request.action == 'currentIframe') {
     sendMsg(request.info)
   }
@@ -23,6 +23,7 @@ function sendMsg(id) {
     // appendHtml(response.iframe)
     const firstKey = Object.keys(obj)[0];
     let target = id ? id : firstKey
+    console.log(obj, target)
     const firstValue = obj[target];
     appendHtml(firstValue)
   });

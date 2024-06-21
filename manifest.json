@@ -9,7 +9,9 @@
     "128": "images/icon-128.png"
   },
   "action": {
+    "default_title": "Open Floating Window",
     "default_popup": "popup.html"
+
   },
   "background": {
     "service_worker": "background.js"
@@ -18,8 +20,7 @@
     "activeTab",
     "scripting",
     "contextMenus",
-    "notifications",
-    "activeTab"
+    "notifications"
 ],
   "content_scripts": [
     {
