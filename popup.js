@@ -33,6 +33,8 @@ function sendMsg(id) {
 function copyText(element) {
   if (element == 'undefined') {
     element = ''
+  } else {
+    element = spiltUrl(element)
   }
   // 获取 <a> 标签中的文本
   var copyText = element;
@@ -59,7 +61,6 @@ function splitUrl(url) {
 }
 
 function appendHtml(totalIF) {
-  console.log(totalIF)
   let color = document.querySelector('.color')
   let str = ''
   for (const key in totalIF) {
@@ -80,4 +81,8 @@ function mountFun(dom) {
     event.preventDefault()
     copyText(event.target.dataset.src)
   })
+}
+
+function spiltUrl(src) {
+  return 'menu' + src.split('menu')[1]
 }

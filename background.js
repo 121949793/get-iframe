@@ -15,13 +15,11 @@
 // });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log(request)
   if (request.action === "fetchData") {
     console.log("Message received from popup.js:", request);
     // 处理逻辑并响应popup
     // 向content script发送消息
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      console.log(tabs, 111111111111)
       chrome.tabs.sendMessage(tabs[0].id, { action: "highlightText", color: getRandomHexColor() }, (response) => {
         // const data = { message: "Hello from background.js!" };
         sendResponse(response);

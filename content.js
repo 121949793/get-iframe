@@ -6,14 +6,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     let tempArr = getIframeSrc(getAllIframe)
     // sendResponse({ iframe: splitUrl(tempArr) });
     let totalIndex = findIframeIndex(getAllIframe)
-    console.log(totalIndex)
     let totalFun = getIfmFuns(getAllIframe)
     let allIframeHTML = getAllIframeHTML(getAllIframe)
-    console.log(totalIndex)
-
     let iframeFunURL = getIframeFunUrl(allIframeHTML, totalFun, totalIndex)
     let allIfCompleteUrl = concatUrl(tempArr, iframeFunURL)
-    console.log(allIfCompleteUrl)
     sendResponse({ iframe: allIfCompleteUrl });
   }
 });
@@ -31,10 +27,6 @@ function getIframeDom(iframe) {
 
   for (var i = 0; i < scripts.length; i++) {
     var scriptContent = scripts[i].textContent || scripts[i].innerText; // 兼容性处理  
-    // console.log('Script ' + (i + 1) + ':');
-    // console.log(scriptContent);
-    // console.dir(scripts[i])
-    // console.log('------------------------');
   }
   return DOM
 }
@@ -43,7 +35,7 @@ function getIframeId(iframe) {
 function getIframeDomHTML(iframe) {
   let iframeDocument = iframe.contentWindow.document;
   let DOM = iframeDocument.documentElement.outerHTML;
-  // console.log(extractFunctionBody('btnAdd', DOM))
+
   return DOM
 }
 const extractFunctionBody = (functionName, scriptText) => {
@@ -97,7 +89,7 @@ function getIframeFunUrl(iframeArr, funArr, indexArr) {
       name: 'index',
       path: indexArr[nums]
     }
-    console.log(indexArr[nums], 12312)
+
     funArr[nums].forEach(item => {
       let fun = extractFunctionBody(item, iframeArr[key])
       let name = getFunName(item, iframeArr[key])
@@ -106,16 +98,17 @@ function getIframeFunUrl(iframeArr, funArr, indexArr) {
       obj[key1][keyName] = new Object()
       obj[key1][keyName].path = str
       obj[key1][keyName].name = name
+      console.log(obj[key1])
     })
     nums++
 
   }
-  console.log(JSON.parse(JSON.stringify(obj)))
+
   return obj
 }
 
 function findURL(str) {
-  // console.log(str)
+
   // 正则表达式匹配 HTML 文件路径
   const htmlPathRegex = /'([^']*\.html)[^']*'/g;
   // 替换 HTML 文件路径
@@ -159,7 +152,7 @@ function getFunName(funName, htmlString) {
   var parser = new DOMParser();
   var document = parser.parseFromString(htmlString, 'text/html');
   let funDom = document.querySelectorAll(`[onclick='${funName}']`)
-  console.log(funDom)
+
   if (funDom.length != 1) {
     console.log('再次处理')
     return
