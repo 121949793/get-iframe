@@ -1,16 +1,11 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log(request)
   if (request.action === "highlightText") {
     // document.body.style.backgroundColor = request.color;
 
-    let getAllIframe = getArrIfm()
-    let tempArr = getIframeSrc(getAllIframe)
-    // sendResponse({ iframe: splitUrl(tempArr) });
-    let totalIndex = findIframeIndex(getAllIframe)
-    let totalFun = getIfmFuns(getAllIframe)
-    let allIframeHTML = getAllIframeHTML(getAllIframe)
-    let iframeFunURL = getIframeFunUrl(allIframeHTML, totalFun, totalIndex)
-    let allIfCompleteUrl = concatUrl(tempArr, iframeFunURL)
-    sendResponse({ iframe: allIfCompleteUrl });
+  }
+  if (request.action === 'openFloatingWindow') {
+    createFloatingWindow();
   }
 });
 
@@ -98,7 +93,7 @@ function getIframeFunUrl(iframeArr, funArr, indexArr) {
       obj[key1][keyName] = new Object()
       obj[key1][keyName].path = str
       obj[key1][keyName].name = name
-      console.log(obj[key1])
+      // console.log(obj[key1])
     })
     nums++
 
@@ -175,8 +170,10 @@ function getHtmlChange() {
   // 回调函数，当监控的元素发生变化时执行
   const callback = function (mutationsList, observer) {
     let showIframeId = getShowIframe().id
-    chrome.runtime.sendMessage({ action: 'currentIframe', info: showIframeId })
-
+    let info = getAllIframeFuns()
+    let target = info[showIframeId]
+    appendHtml(target)
+    // chrome.runtime.sendMessage({ action: 'currentIframe', info: showIframeId })
   };
 
   // 创建一个观察者实例并传入回调函数
@@ -202,3 +199,147 @@ function findIframeIndex(arr) {
   return [...arr].map(item => '...' + item.src.split('?')[0].split('menu')[1])
 }
 
+function createFloatingWindow() {
+  // 检查是否已存在悬浮窗口
+  if (document.getElementById('floatingWindow')) {
+    return;
+  }
+
+  // 创建悬浮窗口容器
+  const floatingWindow = document.createElement('div');
+  floatingWindow.id = 'floatingWindow';
+  floatingWindow.style.position = 'fixed';
+  floatingWindow.style.top = '50px';
+  floatingWindow.style.right = '50px';
+  floatingWindow.style.width = '200px';
+  floatingWindow.style.height = '100px';
+  floatingWindow.style.backgroundColor = 'white';
+  floatingWindow.style.border = '1px solid #ccc';
+  floatingWindow.style.boxShadow = '0 0 10px rgba(0,0,0,0.1)';
+  floatingWindow.style.zIndex = '10000';
+  floatingWindow.style.padding = '10px';
+  floatingWindow.style.overflowY = 'auto';
+  floatingWindow.style.resize = 'both';
+  floatingWindow.style.overflow = 'auto';
+
+  // 创建窗口标题栏
+  const titleBar = document.createElement('div');
+  titleBar.style.backgroundColor = '#f1f1f1';
+  titleBar.style.padding = '10px';
+  titleBar.style.cursor = 'move';
+  titleBar.innerHTML = `<strong>Floating Window</strong>`;
+  floatingWindow.appendChild(titleBar);
+
+  // 创建关闭按钮
+  const closeButton = document.createElement('button');
+  closeButton.innerText = 'Close';
+  closeButton.style.float = 'right';
+  closeButton.addEventListener('click', () => {
+    floatingWindow.remove();
+  });
+  titleBar.appendChild(closeButton);
+
+  // 加入自定义内容
+  const content = document.createElement('div');
+  content.id = 'btns';
+  content.innerHTML = `
+    <p>This is a custom floating window. You can add your own content here.</p>
+  `;
+  floatingWindow.appendChild(content);
+
+  // 将悬浮窗口添加到页面中
+  document.body.appendChild(floatingWindow);
+
+  // 添加拖拽功能
+  let isDragging = false;
+  let offsetX, offsetY;
+
+  titleBar.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    offsetX = e.clientX - floatingWindow.getBoundingClientRect().left;
+    offsetY = e.clientY - floatingWindow.getBoundingClientRect().top;
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+      floatingWindow.style.left = `${e.clientX - offsetX}px`;
+      floatingWindow.style.top = `${e.clientY - offsetY}px`;
+    }
+  });
+
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+  });
+}
+
+
+function getAllIframeFuns() {
+  let getAllIframe = getArrIfm()
+  let tempArr = getIframeSrc(getAllIframe)
+  // sendResponse({ iframe: splitUrl(tempArr) });
+  let totalIndex = findIframeIndex(getAllIframe)
+  let totalFun = getIfmFuns(getAllIframe)
+  let allIframeHTML = getAllIframeHTML(getAllIframe)
+  let iframeFunURL = getIframeFunUrl(allIframeHTML, totalFun, totalIndex)
+  let allIfCompleteUrl = concatUrl(tempArr, iframeFunURL)
+  // sendResponse({ iframe: allIfCompleteUrl });
+  return allIfCompleteUrl
+}
+
+
+function copyText(element) {
+  if (element == 'undefined') {
+    element = ''
+  } else {
+    element = spiltUrl(element)
+  }
+  // 获取 <a> 标签中的文本
+  var copyText = element;
+  // 创建一个临时的输入框元素
+  var tempInput = document.createElement("input");
+  tempInput.style.position = "absolute";
+  tempInput.style.left = "-9999px";
+  tempInput.value = copyText;
+  document.body.appendChild(tempInput);
+
+  tempInput.select();
+  document.execCommand("copy");
+  document.body.removeChild(tempInput);
+
+
+  chrome.runtime.sendMessage({ action: 'copyDone', info: element })
+  // 可选：显示复制成功的提示
+  // alert("文本已复制: " + copyText);
+}
+
+function splitUrl(url) {
+  let str = String(url).split('?')[0]
+  return str
+}
+
+function appendHtml(totalIF) {
+  let targetDom = document.querySelector('#floatingWindow #btns')
+  let str = ''
+  for (const key in totalIF) {
+    let domName = `iframeHanlder${key}`
+    let item = totalIF[key]
+    str += `<button id="${domName}" data-src="${item.path}"  class="btn-flat">${item.name}</button>`
+  }
+  targetDom.innerHTML = str
+  for (const key in totalIF) {
+    let domName = `iframeHanlder${key}`
+    mountFun(`#${domName}`)
+  }
+}
+
+function mountFun(dom) {
+
+  document.querySelector(dom).addEventListener('click', (event) => {
+    event.preventDefault()
+    copyText(event.target.dataset.src)
+  })
+}
+
+function spiltUrl(src) {
+  return 'menu' + src.split('menu')[1]
+}

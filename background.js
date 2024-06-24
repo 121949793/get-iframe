@@ -54,3 +54,14 @@ function getRandomHexColor() {
 }
 
 
+// background.js
+chrome.action.onClicked.addListener((tab) => {
+  // 向当前活动页面注入内容脚本
+  chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    files: ['content.js']
+  }, () => {
+    // 发送消息给内容脚本以显示悬浮窗口
+    chrome.tabs.sendMessage(tab.id, { action: 'openFloatingWindow' });
+  });
+});

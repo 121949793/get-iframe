@@ -9,9 +9,8 @@
     "128": "images/icon-128.png"
   },
   "action": {
-    "default_title": "Open Floating Window",
-    "default_popup": "popup.html"
-
+    "default_title": "Open Floating Window"
+    
   },
   "background": {
     "service_worker": "background.js"
