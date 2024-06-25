@@ -208,19 +208,21 @@ function createFloatingWindow() {
   // 创建悬浮窗口容器
   const floatingWindow = document.createElement('div');
   floatingWindow.id = 'floatingWindow';
-  floatingWindow.style.position = 'fixed';
-  floatingWindow.style.top = '50px';
-  floatingWindow.style.right = '50px';
-  floatingWindow.style.width = '200px';
-  floatingWindow.style.height = '100px';
-  floatingWindow.style.backgroundColor = 'white';
-  floatingWindow.style.border = '1px solid #ccc';
-  floatingWindow.style.boxShadow = '0 0 10px rgba(0,0,0,0.1)';
-  floatingWindow.style.zIndex = '10000';
-  floatingWindow.style.padding = '10px';
-  floatingWindow.style.overflowY = 'auto';
-  floatingWindow.style.resize = 'both';
-  floatingWindow.style.overflow = 'auto';
+  // console.log(boxStyle)
+  assignFun(floatingWindow.style, boxStyle)
+  // floatingWindow.style.position = 'fixed';
+  // floatingWindow.style.top = '50px';
+  // floatingWindow.style.right = '50px';
+  // floatingWindow.style.width = '200px';
+  // floatingWindow.style.height = '100px';
+  // floatingWindow.style.backgroundColor = 'white';
+  // floatingWindow.style.border = '1px solid #ccc';
+  // floatingWindow.style.boxShadow = '0 0 10px rgba(0,0,0,0.1)';
+  // floatingWindow.style.zIndex = '10000';
+  // floatingWindow.style.padding = '10px';
+  // floatingWindow.style.overflowY = 'auto';
+  // floatingWindow.style.resize = 'both';
+  // floatingWindow.style.overflow = 'auto';
 
   // 创建窗口标题栏
   const titleBar = document.createElement('div');
@@ -242,9 +244,6 @@ function createFloatingWindow() {
   // 加入自定义内容
   const content = document.createElement('div');
   content.id = 'btns';
-  content.innerHTML = `
-    <p>This is a custom floating window. You can add your own content here.</p>
-  `;
   floatingWindow.appendChild(content);
 
   // 将悬浮窗口添加到页面中
