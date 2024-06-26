@@ -34,12 +34,14 @@ function getIframeDomHTML(iframe) {
   return DOM
 }
 const extractFunctionBody = (functionName, scriptText) => {
-  const functionStart = scriptText.indexOf(`function ${functionName}`);
-  if (functionStart === -1) return null;
+  const functionRegex = new RegExp(`(?:function\\s+${functionName}\\s*\\(|${functionName}\\s*=\\s*\\([^)]*\\)\\s*=>)`, 'g');
+  const match = functionRegex.exec(scriptText);
+  if (!match) return null;
 
+  const functionStart = match.index;
   let openBraces = 0;
   let functionBody = '';
-  let i = functionStart;
+  let i = scriptText.indexOf('{', functionStart);
 
   while (i < scriptText.length) {
     const char = scriptText[i];
@@ -49,8 +51,15 @@ const extractFunctionBody = (functionName, scriptText) => {
     if (openBraces === 0 && functionBody.includes('{')) break;
     i++;
   }
-  return functionBody;
+
+  const bodyStart = functionBody.indexOf('{') + 1;
+  const bodyEnd = functionBody.lastIndexOf('}');
+  functionBody = functionBody.substring(bodyStart, bodyEnd).trim();
+  const urlPattern = /https?:\/\/[^\s"]+\.html\b|\.\/[^\s"]+\.html\b/g;
+  console.log(functionBody.match(urlPattern)?.[0].split('?'))
+  return functionBody.match(urlPattern)?.[0].split('?')[0]
 };
+
 function getAllIframeHTML(allIfm) {
   let totalFun = new Object()
   allIfm.forEach(item => {
@@ -86,9 +95,9 @@ function getIframeFunUrl(iframeArr, funArr, indexArr) {
     }
 
     funArr[nums].forEach(item => {
-      let fun = extractFunctionBody(item, iframeArr[key])
+      // let fun = extractFunctionBody(item, iframeArr[key])
       let name = getFunName(item, iframeArr[key])
-      let str = findURL(fun)
+      let str = extractFunctionBody(item, iframeArr[key])
       let keyName = item.split('()')[0]
       obj[key1][keyName] = new Object()
       obj[key1][keyName].path = str
@@ -102,15 +111,7 @@ function getIframeFunUrl(iframeArr, funArr, indexArr) {
   return obj
 }
 
-function findURL(str) {
 
-  // 正则表达式匹配 HTML 文件路径
-  const htmlPathRegex = /'([^']*\.html)[^']*'/g;
-  // 替换 HTML 文件路径
-  const url = htmlPathRegex.exec(str)?.[1]
-
-  return url
-}
 
 function getIframeSrc(iframe) {
   iframe = [...iframe]
@@ -154,11 +155,9 @@ function getFunName(funName, htmlString) {
   }
   return funDom[0]?.title
 }
-getHtmlChange()
 function getHtmlChange() {
-
+  queueMicrotask(() => { observerCallback() });
   const targetNode = document.getElementById('ContentPannel');
-
   // 配置选项
   const config = {
     childList: true, // 监听子节点的变动
@@ -166,16 +165,11 @@ function getHtmlChange() {
     attributes: true, // 监听属性的变动
     characterData: false // 监听节点内容或文本的变动
   };
-
   // 回调函数，当监控的元素发生变化时执行
   const callback = function (mutationsList, observer) {
-    let showIframeId = getShowIframe().id
-    let info = getAllIframeFuns()
-    let target = info[showIframeId]
-    appendHtml(target)
+    observerCallback()
     // chrome.runtime.sendMessage({ action: 'currentIframe', info: showIframeId })
   };
-
   // 创建一个观察者实例并传入回调函数
   const observer = new MutationObserver(callback);
 
@@ -200,6 +194,7 @@ function findIframeIndex(arr) {
 }
 
 function createFloatingWindow() {
+  getHtmlChange()
   // 检查是否已存在悬浮窗口
   if (document.getElementById('floatingWindow')) {
     return;
@@ -210,19 +205,6 @@ function createFloatingWindow() {
   floatingWindow.id = 'floatingWindow';
   // console.log(boxStyle)
   assignFun(floatingWindow.style, boxStyle)
-  // floatingWindow.style.position = 'fixed';
-  // floatingWindow.style.top = '50px';
-  // floatingWindow.style.right = '50px';
-  // floatingWindow.style.width = '200px';
-  // floatingWindow.style.height = '100px';
-  // floatingWindow.style.backgroundColor = 'white';
-  // floatingWindow.style.border = '1px solid #ccc';
-  // floatingWindow.style.boxShadow = '0 0 10px rgba(0,0,0,0.1)';
-  // floatingWindow.style.zIndex = '10000';
-  // floatingWindow.style.padding = '10px';
-  // floatingWindow.style.overflowY = 'auto';
-  // floatingWindow.style.resize = 'both';
-  // floatingWindow.style.overflow = 'auto';
 
   // 创建窗口标题栏
   const titleBar = document.createElement('div');
@@ -341,4 +323,11 @@ function mountFun(dom) {
 
 function spiltUrl(src) {
   return 'menu' + src.split('menu')[1]
+}
+
+function observerCallback() {
+  let showIframeId = getShowIframe().id
+  let info = getAllIframeFuns()
+  let target = info[showIframeId]
+  appendHtml(target)
 }
