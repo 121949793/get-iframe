@@ -56,7 +56,6 @@ const extractFunctionBody = (functionName, scriptText) => {
   const bodyEnd = functionBody.lastIndexOf('}');
   functionBody = functionBody.substring(bodyStart, bodyEnd).trim();
   const urlPattern = /https?:\/\/[^\s"]+\.html\b|\.\/[^\s"]+\.html\b/g;
-  console.log(functionBody.match(urlPattern)?.[0].split('?'))
   return functionBody.match(urlPattern)?.[0].split('?')[0]
 };
 
@@ -327,6 +326,13 @@ function spiltUrl(src) {
 
 function observerCallback() {
   let showIframeId = getShowIframe().id
+  let iframe = getShowIframe()
+  var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+
+  // 选择要监听的元素，例如一个按钮
+  var buttonInIframe = iframeDocument.getElementById('toolsOther');
+  console.log(buttonInIframe)
+
   let info = getAllIframeFuns()
   let target = info[showIframeId]
   appendHtml(target)
