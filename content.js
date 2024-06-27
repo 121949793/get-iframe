@@ -150,7 +150,8 @@ function getFunName(funName, htmlString) {
   }
   return funDom[0]?.title
 }
-function getHtmlChange() {
+let observer = null
+function createObserver() {
   queueMicrotask(() => { observerCallback() });
   const targetNode = document.getElementById('ContentPannel');
   // 配置选项
@@ -166,12 +167,14 @@ function getHtmlChange() {
     // chrome.runtime.sendMessage({ action: 'currentIframe', info: showIframeId })
   };
   // 创建一个观察者实例并传入回调函数
-  const observer = new MutationObserver(callback);
+  observer = new MutationObserver(callback);
 
   // 监听目标节点
   observer.observe(targetNode, config);
 }
-
+function destroyObserver() {
+  observer.disconnect();
+}
 function getShowIframe() {
   const container = document.getElementById('ContentPannel');
   const iframes = container.getElementsByTagName('iframe');
@@ -189,12 +192,11 @@ function findIframeIndex(arr) {
 }
 
 function createFloatingWindow() {
-  getHtmlChange()
   // 检查是否已存在悬浮窗口
   if (document.getElementById('floatingWindow')) {
     return;
   }
-
+  createObserver()
   // 创建悬浮窗口容器
   const floatingWindow = document.createElement('div');
   floatingWindow.id = 'floatingWindow';
@@ -215,6 +217,7 @@ function createFloatingWindow() {
   closeButton.innerText = 'Close';
   closeButton.style.float = 'right';
   closeButton.addEventListener('click', () => {
+    destroyObserver()
     floatingWindow.remove();
   });
   titleBar.appendChild(closeButton);
@@ -304,18 +307,19 @@ function appendHtml(totalIF) {
     let item = totalIF[key]
     const content = document.createElement('div');
     content.id = domName;
-    content.dataset.src = domName;
+    content.dataset.src = item.path;
     content.textContent = item.name;
     assignFun(content.style, btnStyle)
+    if (!item.path) {
+      content.style.backgroundColor = '#a2a2a2'
+    }
     targetDom.appendChild(content);
   }
-  console.log(targetDom)
-  // assignFun(closeButton.style, btnStyle)
 
-  // for (const key in totalIF) {
-  //   let domName = `iframeHanlder${key}`
-  //   mountFun(`#${domName}`)
-  // }
+  for (const key in totalIF) {
+    let domName = `iframeHanlder${key}`
+    mountFun(`#${domName}`)
+  }
 }
 
 function mountFun(dom) {
@@ -326,19 +330,30 @@ function mountFun(dom) {
   })
 }
 
-function spiltUrl(src) {
-  return 'menu/' + src.split('/menu/')[1]
-}
 
 function observerCallback() {
   let showIframeId = getShowIframe().id
   let iframe = getShowIframe()
-  var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-
+  var iframeDocument = iframe.contentDocument
+  console.log(iframeDocument)
+  // console.log(iframeDocument)
+  setTimeout(() => {
+    // createObserver()
+  }, 1000)
   // 选择要监听的元素，例如一个按钮
-  var buttonInIframe = iframeDocument.getElementById('toolsOther');
-  console.log(buttonInIframe)
+  // var buttonInIframe = null;
+  // console.log(buttonInIframe)
+  // setInterval(() => {
+  //   buttonInIframe = iframeDocument.getElementById('toolsOther')
+  //   console.log(buttonInIframe)
+  //   // if (buttonInIframe != null) {
+  //   //   console.log(buttonInIframe)
+  //   //   // clearInterval(getBar)
+  //   // }
+  // }, 500)
+
   let info = getAllIframeFuns()
   let target = info[showIframeId]
   appendHtml(target)
 }
+

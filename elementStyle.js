@@ -27,10 +27,8 @@ const btnStyle = {
   display: 'inline-block',
   appearance: 'none',
   cursor: 'pointer',
-  border: 'none',
   boxSizing: 'border-box',
   backgroundColor: '#1B9AF7',
-  borderColor: '#1B9AF7',
   color: '#FFF',
   borderRadius: '4px',
   margin: '4px 7px 0 0'
