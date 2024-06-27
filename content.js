@@ -56,7 +56,7 @@ const extractFunctionBody = (functionName, scriptText) => {
   const bodyEnd = functionBody.lastIndexOf('}');
   functionBody = functionBody.substring(bodyStart, bodyEnd).trim();
   const urlPattern = /https?:\/\/[^\s"]+\.html\b|\.\/[^\s"]+\.html\b/g;
-  return functionBody.match(urlPattern)?.[0].split('?')[0]
+  return functionBody.match(urlPattern)?.[0]
 };
 
 function getAllIframeHTML(allIfm) {
@@ -101,12 +101,10 @@ function getIframeFunUrl(iframeArr, funArr, indexArr) {
       obj[key1][keyName] = new Object()
       obj[key1][keyName].path = str
       obj[key1][keyName].name = name
-      // console.log(obj[key1])
     })
     nums++
 
   }
-
   return obj
 }
 
@@ -131,10 +129,8 @@ function concatUrl(ifArr, funArr) {
     for (const val in item) {
       let src = item[val].path
       if (src) {
-        let Infix = src?.match(/\.\.\/([^/]+)/)?.[1]
-        let suffix = src.split(Infix + '/')[1]
-        let prefix = ifurl.split(Infix)[0]
-        item[val].path = prefix + Infix + suffix
+        src = src.slice(1)
+        item[val].path = 'menu' + src
       }
     }
     index++
@@ -189,7 +185,7 @@ function getShowIframe() {
   return blockIframes
 }
 function findIframeIndex(arr) {
-  return [...arr].map(item => '...' + item.src.split('?')[0].split('menu')[1])
+  return [...arr].map(item => '.' + item.src.split('?')[0].split('menu')[1])
 }
 
 function createFloatingWindow() {
@@ -263,6 +259,9 @@ function getAllIframeFuns() {
   let iframeFunURL = getIframeFunUrl(allIframeHTML, totalFun, totalIndex)
   let allIfCompleteUrl = concatUrl(tempArr, iframeFunURL)
   // sendResponse({ iframe: allIfCompleteUrl });
+  console.log(allIfCompleteUrl)
+  console.log(JSON.parse(JSON.stringify(allIfCompleteUrl)))
+
   return allIfCompleteUrl
 }
 
@@ -270,8 +269,6 @@ function getAllIframeFuns() {
 function copyText(element) {
   if (element == 'undefined') {
     element = ''
-  } else {
-    element = spiltUrl(element)
   }
   // 获取 <a> 标签中的文本
   var copyText = element;
@@ -321,7 +318,7 @@ function mountFun(dom) {
 }
 
 function spiltUrl(src) {
-  return 'menu' + src.split('menu')[1]
+  return 'menu/' + src.split('/menu/')[1]
 }
 
 function observerCallback() {
@@ -332,7 +329,6 @@ function observerCallback() {
   // 选择要监听的元素，例如一个按钮
   var buttonInIframe = iframeDocument.getElementById('toolsOther');
   console.log(buttonInIframe)
-
   let info = getAllIframeFuns()
   let target = info[showIframeId]
   appendHtml(target)
