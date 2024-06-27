@@ -211,6 +211,7 @@ function createFloatingWindow() {
 
   // 创建关闭按钮
   const closeButton = document.createElement('button');
+
   closeButton.innerText = 'Close';
   closeButton.style.float = 'right';
   closeButton.addEventListener('click', () => {
@@ -296,17 +297,25 @@ function splitUrl(url) {
 
 function appendHtml(totalIF) {
   let targetDom = document.querySelector('#floatingWindow #btns')
+  targetDom.innerHTML = ''
   let str = ''
   for (const key in totalIF) {
     let domName = `iframeHanlder${key}`
     let item = totalIF[key]
-    str += `<button id="${domName}" data-src="${item.path}"  class="btn-flat">${item.name}</button>`
+    const content = document.createElement('div');
+    content.id = domName;
+    content.dataset.src = domName;
+    content.textContent = item.name;
+    assignFun(content.style, btnStyle)
+    targetDom.appendChild(content);
   }
-  targetDom.innerHTML = str
-  for (const key in totalIF) {
-    let domName = `iframeHanlder${key}`
-    mountFun(`#${domName}`)
-  }
+  console.log(targetDom)
+  // assignFun(closeButton.style, btnStyle)
+
+  // for (const key in totalIF) {
+  //   let domName = `iframeHanlder${key}`
+  //   mountFun(`#${domName}`)
+  // }
 }
 
 function mountFun(dom) {

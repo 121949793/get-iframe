@@ -15,13 +15,25 @@ const boxStyle = {
 }
 
 const btnStyle = {
-  backgroundColor: '#70c0e8',
-  color: '#fff',
-  border: 'none',
-  padding: '8px 16px',
-  fontSize: '14px',
+  fontWeight: '300',
+  fontSize: '13px',
+  fontFamily: '"Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif',
+  textDecoration: 'none',
+  textAlign: 'center',
+  lineHeight: '27px',
+  height: '27px',
+  padding: '0 10px',
+  margin: '0',
+  display: 'inline-block',
+  appearance: 'none',
   cursor: 'pointer',
+  border: 'none',
+  boxSizing: 'border-box',
+  backgroundColor: '#1B9AF7',
+  borderColor: '#1B9AF7',
+  color: '#FFF',
   borderRadius: '4px',
+  margin: '4px 7px 0 0'
 }
 const assignFun = (obj, style) => {
   for (const key in style) {
