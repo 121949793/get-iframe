@@ -257,7 +257,7 @@ function getAllIframeFuns() {
   let tempArr = getIframeSrc(getAllIframe)
   let allIframeId = getAllIframeId(getAllIframe)
   let barNames = getAllBarName(allIframeId)
-  console.log(allIframeId)
+  console.log(barNames)
   // sendResponse({ iframe: splitUrl(tempArr) });
   let totalIndex = findIframeIndex(getAllIframe)
   let totalFun = getIfmFuns(getAllIframe)
@@ -365,15 +365,14 @@ function getAllIframeId(iframe) {
 }
 
 function getAllBarName(ids) {
-  let tab = document.querySelector('#tabs_container')
-  ids.map(item => {
-    setTimeout(() => {
-      console.log(item)
-      console.log(document.querySelectorAll(`#${item}`))
-      console.log(tab.querySelector(`#${item}`))
-    })
-
-
+  let barNameArr = ids.map(item => {
+    let targetId = 'tabs_' + item.split('tabs_iframe_')[1]
+    let name = document.querySelector(`#${targetId}`).childNodes[0].title
+    return {
+      key: item,
+      value: name
+    }
   })
-  console.log(tab)
+
+  return barNameArr
 }
