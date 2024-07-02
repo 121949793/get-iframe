@@ -56,7 +56,9 @@ const extractFunctionBody = (functionName, scriptText) => {
   const bodyEnd = functionBody.lastIndexOf('}');
   functionBody = functionBody.substring(bodyStart, bodyEnd).trim();
   const urlPattern = /https?:\/\/[^\s"]+\.html\b|\.\/[^\s"]+\.html\b/g;
-  return functionBody.match(urlPattern)?.[0]
+  functionBody = functionBody.match(urlPattern)?.[0]
+  if (functionBody && functionBody.includes('menu')) functionBody = '.' + functionBody.split('menu')[1]
+  return functionBody
 };
 
 function getAllIframeHTML(allIfm) {
@@ -111,12 +113,7 @@ function getIframeFunUrl(iframeArr, funArr, indexArr) {
 
 
 function getIframeSrc(iframe) {
-  iframe = [...iframe]
-  iframe = iframe.map(item => {
-    return item.src
-  })
-
-  return iframe
+  return [...iframe].map(item => item.src)
 }
 
 
@@ -188,7 +185,9 @@ function getShowIframe() {
   return blockIframes
 }
 function findIframeIndex(arr) {
-  return [...arr].map(item => '.' + item.src.split('?')[0].split('menu')[1])
+  let temparr = [...arr].map(item => '.' + item.src.split('?')[0].split('menu')[1])
+  console.log(temparr, 1111111111111)
+  return temparr
 }
 
 function createFloatingWindow() {
@@ -256,6 +255,9 @@ function createFloatingWindow() {
 function getAllIframeFuns() {
   let getAllIframe = getArrIfm()
   let tempArr = getIframeSrc(getAllIframe)
+  let allIframeId = getAllIframeId(getAllIframe)
+  let barNames = getAllBarName(allIframeId)
+  console.log(allIframeId)
   // sendResponse({ iframe: splitUrl(tempArr) });
   let totalIndex = findIframeIndex(getAllIframe)
   let totalFun = getIfmFuns(getAllIframe)
@@ -264,7 +266,7 @@ function getAllIframeFuns() {
   let allIfCompleteUrl = concatUrl(tempArr, iframeFunURL)
   // sendResponse({ iframe: allIfCompleteUrl });
   console.log(allIfCompleteUrl)
-  console.log(JSON.parse(JSON.stringify(allIfCompleteUrl)))
+
 
   return allIfCompleteUrl
 }
@@ -357,3 +359,21 @@ function observerCallback() {
   appendHtml(target)
 }
 
+function getAllIframeId(iframe) {
+  return [...iframe].map(item => item.id)
+
+}
+
+function getAllBarName(ids) {
+  let tab = document.querySelector('#tabs_container')
+  ids.map(item => {
+    setTimeout(() => {
+      console.log(item)
+      console.log(document.querySelectorAll(`#${item}`))
+      console.log(tab.querySelector(`#${item}`))
+    })
+
+
+  })
+  console.log(tab)
+}
