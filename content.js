@@ -207,6 +207,7 @@ function createFloatingWindow() {
   titleBar.style.backgroundColor = '#f1f1f1';
   titleBar.style.padding = '10px';
   titleBar.style.cursor = 'move';
+  titleBar.id = 'chromeWindow'
   titleBar.innerHTML = `<strong>Floating Window</strong>`;
   floatingWindow.appendChild(titleBar);
 
@@ -257,18 +258,20 @@ function getAllIframeFuns() {
   let tempArr = getIframeSrc(getAllIframe)
   let allIframeId = getAllIframeId(getAllIframe)
   let barNames = getAllBarName(allIframeId)
-  console.log(barNames)
-  // sendResponse({ iframe: splitUrl(tempArr) });
+  // console.log(allIfCompleteUrl)
+
   let totalIndex = findIframeIndex(getAllIframe)
   let totalFun = getIfmFuns(getAllIframe)
   let allIframeHTML = getAllIframeHTML(getAllIframe)
   let iframeFunURL = getIframeFunUrl(allIframeHTML, totalFun, totalIndex)
   let allIfCompleteUrl = concatUrl(tempArr, iframeFunURL)
-  // sendResponse({ iframe: allIfCompleteUrl });
-  console.log(allIfCompleteUrl)
+  let info = allIfCompleteUrl
 
-
-  return allIfCompleteUrl
+  let showIframeId = getShowIframe().id
+  let target = info[showIframeId]
+  let ttt = barNames.find(item => item.key == showIframeId).value
+  updateWindowTitle(ttt)
+  return target
 }
 
 
@@ -334,28 +337,7 @@ function mountFun(dom) {
 
 
 function observerCallback() {
-  let showIframeId = getShowIframe().id
-  let iframe = getShowIframe()
-  var iframeDocument = iframe.contentDocument
-  console.log(iframeDocument)
-  // console.log(iframeDocument)
-  setTimeout(() => {
-    // createObserver()
-  }, 1000)
-  // 选择要监听的元素，例如一个按钮
-  // var buttonInIframe = null;
-  // console.log(buttonInIframe)
-  // setInterval(() => {
-  //   buttonInIframe = iframeDocument.getElementById('toolsOther')
-  //   console.log(buttonInIframe)
-  //   // if (buttonInIframe != null) {
-  //   //   console.log(buttonInIframe)
-  //   //   // clearInterval(getBar)
-  //   // }
-  // }, 500)
-
-  let info = getAllIframeFuns()
-  let target = info[showIframeId]
+  let target = getAllIframeFuns()
   appendHtml(target)
 }
 
@@ -375,4 +357,10 @@ function getAllBarName(ids) {
   })
 
   return barNameArr
+}
+
+function updateWindowTitle(val) {
+  let targetDom = document.querySelector('#chromeWindow > strong')
+  console.log(targetDom)
+  targetDom.innerHTML = val
 }
